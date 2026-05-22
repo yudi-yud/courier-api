@@ -617,6 +617,6 @@ Disarankan menggunakan:
 Authorization: Bearer <token>
 ```
 
-# ❤️ Yudi dengan kopi dari tadi 🍵😊
+# A little bit of logic, a little bit of love ❤️
 
 Built using Golang & Fiber.
