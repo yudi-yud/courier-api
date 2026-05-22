@@ -1,0 +1,286 @@
+basePath: /api/v1
+definitions:
+  models.Shipment:
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Ini adalah API untuk sistem manajemen pengiriman ekspedisi.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Courier / Tracking API
+  version: "1.0"
+paths:
+  /shipments:
+    get:
+      description: Mengambil semua data pengiriman dengan fitur pencarian dan paginasi.
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Limit per page
+        in: query
+        name: limit
+        type: integer
+      - description: Search by Resi or Receiver Name
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all shipments with pagination
+      tags:
+      - Shipment
+    post:
+      consumes:
+      - application/json
+      description: Membuat data pengiriman baru dengan perhitungan harga otomatis.
+      parameters:
+      - description: Shipment Data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Shipment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'contoh: {\"status\": 201, \"message\": \"Shipment created\",
+            \"data\": {...}}'
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create new shipment
+      tags:
+      - Shipment
+  /shipments/{resi}/assign:
+    post:
+      consumes:
+      - application/json
+      description: Menugaskan kurir tertentu ke sebuah pengiriman (Admin Only).
+      parameters:
+      - description: Nomor Resi
+        in: path
+        name: resi
+        required: true
+        type: string
+      - description: Courier ID
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            type: integer
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Assign Courier to Shipment
+      tags:
+      - Shipment
+  /shipments/{resi}/pdf:
+    get:
+      description: Generate dan download label cetak PDF untuk pengiriman.
+      parameters:
+      - description: Nomor Resi
+        in: path
+        name: resi
+        required: true
+        type: string
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: PDF File
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Generate Airway Bill PDF
+      tags:
+      - Shipment
+  /shipments/{resi}/pod:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload bukti foto penerimaan paket (Format: multipart/form-data).'
+      parameters:
+      - description: Nomor Resi
+        in: path
+        name: resi
+        required: true
+        type: string
+      - description: POD Image File
+        in: formData
+        name: pod_image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Image required
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Upload Proof of Delivery
+      tags:
+      - Shipment
+  /shipments/{resi}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update status pengiriman (oleh Kurir/Admin).
+      parameters:
+      - description: Nomor Resi
+        in: path
+        name: resi
+        required: true
+        type: string
+      - description: Status Update Data
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update Shipment Status
+      tags:
+      - Shipment
+  /shipments/stats:
+    get:
+      description: Mengambil ringkasan statistik pengiriman.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get Dashboard Statistics
+      tags:
+      - Shipment
+  /track/{resi}:
+    get:
+      description: Melacak status pengiriman dan riwayat perjalanan publik (tanpa
+        login).
+      parameters:
+      - description: Nomor Resi
+        in: path
+        name: resi
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Resi not found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Track shipment by Resi
+      tags:
+      - Public
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
