@@ -10,6 +10,7 @@ type ShipmentRepository interface {
 	FindByResi(resi string) (*models.Shipment, error)
 
 	FindAll(page, limit int, search string) ([]models.Shipment, int64, error)
+	FindByCourierID(courierID uint) ([]models.Shipment, error)
 
 	Update(shipment *models.Shipment) error
 	AddHistory(history *models.TrackingHistory) error
@@ -54,6 +55,14 @@ func (r *shipmentRepository) FindAll(page, limit int, search string) ([]models.S
 	}
 
 	return shipments, total, nil
+}
+
+func (r *shipmentRepository) FindByCourierID(courierID uint) ([]models.Shipment, error) {
+	var shipments []models.Shipment
+	if err := config.DB.Where("courier_id = ?", courierID).Find(&shipments).Error; err != nil {
+		return nil, err
+	}
+	return shipments, nil
 }
 
 func (r *shipmentRepository) Update(shipment *models.Shipment) error {

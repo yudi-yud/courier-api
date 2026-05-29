@@ -18,6 +18,7 @@ type ShipmentService interface {
 	GetAllShipments(page, limit int, search string) (map[string]interface{}, error)
 	AssignCourier(resi string, courierID uint) error
 	GetDashboardStats() (map[string]interface{}, error)
+	GetMyTasks(userID uint) ([]models.Shipment, error)
 }
 
 type shipmentService struct {
@@ -186,4 +187,19 @@ func (s *shipmentService) GetDashboardStats() (map[string]interface{}, error) {
 		"shipped_count":   shipped,
 		"delivered_count": delivered,
 	}, nil
+}
+func (s *shipmentService) GetMyTasks(userID uint) ([]models.Shipment, error) {
+	// 1. Cek apakah user adalah kurir
+	courier, err := s.courierRepo.FindByUserID(userID)
+	if err != nil {
+		return nil, errors.New("courier profile not found for this user")
+	}
+
+	// 2. Ambil paket berdasarkan ID Kurir
+	shipments, err := s.repo.FindByCourierID(courier.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return shipments, nil
 }

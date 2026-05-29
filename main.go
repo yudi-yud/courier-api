@@ -82,7 +82,7 @@ func main() {
 	protected.Post("/shipments/:resi/pod", shipmentController.UploadPOD)
 
 	protected.Get("/shipments/:resi/pdf", shipmentController.GenerateAirwayBillPDF)
-
+	protected.Get("/my-tasks", middleware.Authorize("courier"), shipmentController.GetMyTasks)
 	// Start Server
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -1,66 +1,87 @@
 # Courier / Tracking API 🚚
 
-RESTful API untuk sistem manajemen pengiriman dan pelacakan (tracking) ekspedisi tingkat lanjut.  
-API ini dibangun menggunakan bahasa pemrograman Go (Golang), framework Fiber, database MySQL, serta menerapkan Clean Architecture untuk menjaga struktur kode tetap scalable dan mudah di-maintain.
+RESTful API untuk sistem manajemen pengiriman dan pelacakan ekspedisi tingkat enterprise.
+Dibangun menggunakan **Golang**, **Fiber**, **MySQL**, dan menerapkan konsep **Clean Architecture** serta dokumentasi API menggunakan **Swagger**.
 
 ---
 
 # 🚀 Fitur Utama
 
-- 🔐 Authentication & Authorization menggunakan JWT
-- 👥 Manajemen Kurir (Courier Management)
-- 💰 Tarif Dinamis berdasarkan kota asal, tujuan, dan tipe layanan
-- 📦 Multi-item shipment dalam satu nomor resi
-- 📄 Generate PDF Airway Bill otomatis
-- 📍 Live tracking shipment timeline
-- 📷 Upload POD (Proof of Delivery)
-- 📊 Dashboard statistics shipment
-- 🔍 Pagination & Search shipment
-- 🧱 Clean Architecture (Controller, Service, Repository)
+* 🔐 **Authentication & Authorization**
+  JWT Authentication untuk Admin dan Kurir.
+
+* 👥 **Courier Management**
+  Entitas kurir terpisah dari user login, lengkap dengan profil, kendaraan, dan status kerja.
+
+* 💰 **Dynamic Zone Pricing**
+  Tarif pengiriman otomatis berdasarkan rute dan tipe layanan.
+
+* 📦 **Multi-Item Shipment**
+  Satu nomor resi dapat memiliki banyak item barang.
+
+* 📄 **PDF Airway Bill**
+  Generate label pengiriman dalam format PDF.
+
+* 📍 **Live Tracking System**
+  Pelacakan paket lengkap dengan timeline histori.
+
+* 📷 **Proof of Delivery (POD)**
+  Upload foto bukti penerimaan paket.
+
+* 📊 **Dashboard Statistics**
+  Statistik pengiriman dan ringkasan data.
+
+* 📑 **Swagger Documentation**
+  Dokumentasi API interaktif menggunakan Swagger.
 
 ---
 
 # 🛠 Tech Stack
 
-| Technology | Description |
-|---|---|
-| Golang | Backend Programming Language |
-| Fiber v2 | Web Framework |
-| GORM | ORM Library |
-| MySQL | Database |
-| JWT | Authentication Mechanism |
-| FPDF | PDF Generation Library |
+| Technology       | Description                  |
+| ---------------- | ---------------------------- |
+| Golang           | Backend Programming Language |
+| Fiber v2         | Web Framework                |
+| GORM             | ORM Library                  |
+| MySQL            | Database                     |
+| JWT              | Authentication Mechanism     |
+| Swagger (Swaggo) | API Documentation            |
+| FPDF             | PDF Generation               |
 
 ---
 
-# 📁 Struktur Folder
+# 📁 Project Structure
+
+Project ini menggunakan konsep **Clean Architecture**.
 
 ```bash
 courier-api/
-├── config/              # Database & Environment Configuration
-├── controllers/         # HTTP Handler Layer
-├── middleware/          # JWT Middleware & CORS
-├── models/              # GORM Models
-├── repositories/        # Data Access Layer
-├── services/            # Business Logic Layer
-├── utils/               # Helper Functions
-├── uploads/             # POD Image Storage
-├── .env
-├── main.go
-└── go.mod
+├── config/          # Database & Environment Configuration
+├── constants/       # Static Constants & Status Codes
+├── controllers/     # HTTP Handler Layer
+├── docs/            # Swagger Generated Files
+├── middleware/      # JWT Auth & CORS Middleware
+├── models/          # Database Models
+├── repositories/    # Data Access Layer
+├── services/        # Business Logic Layer
+├── utils/           # Helper Functions
+├── uploads/         # POD Image Storage
+├── .env             # Environment Variables
+├── main.go          # Application Entry Point
+└── go.mod           # Go Dependencies
 ```
 
 ---
 
-# ⚙️ Instalasi & Setup
+# ⚙️ Installation & Setup
 
-## 1. Prasyarat
+## 1. Prerequisites
 
-Pastikan sudah terinstall:
+Pastikan sudah menginstall:
 
-- Go 1.18+
-- MySQL Server
-- Git
+* Go 1.18+
+* MySQL Server
+* Git
 
 ---
 
@@ -68,15 +89,14 @@ Pastikan sudah terinstall:
 
 ```bash
 git clone https://github.com/username/courier-api.git
-
 cd courier-api
 ```
 
 ---
 
-## 3. Konfigurasi Environment
+## 3. Create Environment File
 
-Buat file `.env`
+Buat file `.env`:
 
 ```env
 DB_HOST=localhost
@@ -84,54 +104,68 @@ DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=
 DB_NAME=courier_db
-
-JWT_SECRET=your_super_secret_key
-
+JWT_SECRET=rahasia_super_aman
 PORT=3000
 ```
 
 ---
 
-## 4. Buat Database
+## 4. Install Dependencies
 
-```sql
-CREATE DATABASE courier_db;
+```bash
+go mod tidy
 ```
 
 ---
 
-## 5. Jalankan Aplikasi
+## 5. Install Swagger CLI
 
 ```bash
-# Install dependencies
-go mod tidy
+go install github.com/swaggo/swag/cmd/swag@latest
+```
 
-# Run application
+Generate Swagger Documentation:
+
+```bash
+swag init -g main.go -o ./docs
+```
+
+---
+
+## 6. Run Application
+
+```bash
 go run main.go
 ```
 
-Server berjalan di:
+Server akan berjalan di:
 
 ```bash
 http://localhost:3000
 ```
 
-Aplikasi otomatis:
-- Melakukan migrasi database
-- Membuat user admin default
-
 ---
 
-# 👤 Default Admin
+# 🔑 Default Admin Account
 
-```text
+```txt
 Username : admin
 Password : admin123
 ```
 
 ---
 
-# 📖 API Specification
+# 📖 Swagger Documentation
+
+Akses Swagger UI melalui:
+
+```bash
+http://localhost:3000/swagger/index.html
+```
+
+---
+
+# 📌 API Specification
 
 ## Base URL
 
@@ -143,480 +177,125 @@ http://localhost:3000/api/v1
 
 # 🔐 Authentication
 
-## Login
-
-Mendapatkan JWT access token.
-
-### Endpoint
-
-```http
-POST /login
-```
-
-### Request Body
-
-```json
-{
-  "username": "admin",
-  "password": "admin123"
-}
-```
-
-### Response
-
-```json
-{
-  "success": true,
-  "code": 200,
-  "message": "Login success",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIs..."
-  }
-}
-```
+| Method | Endpoint  | Description         | Access |
+| ------ | --------- | ------------------- | ------ |
+| POST   | /login    | Login Admin / Kurir | Public |
+| POST   | /register | Register User Baru  | Admin  |
 
 ---
 
-## Register User (Admin Only)
+# 👥 Master Data (Admin Only)
 
-Membuat user login baru untuk Admin atau Courier.
+## Tariffs
 
-### Endpoint
-
-```http
-POST /register
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-```
-
-### Request Body
-
-```json
-{
-  "username": "courier_baru",
-  "password": "password123",
-  "role": "courier"
-}
-```
+| Method | Endpoint | Description          |
+| ------ | -------- | -------------------- |
+| POST   | /tariffs | Membuat tarif baru   |
+| GET    | /tariffs | Melihat daftar tarif |
 
 ---
 
-# 👥 Courier Management
+## Couriers
 
-## Create Courier Profile
-
-Membuat profil courier berdasarkan user login.
-
-### Endpoint
-
-```http
-POST /couriers
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-```
-
-### Request Body
-
-```json
-{
-  "name": "Jono Supir",
-  "phone": "08123456789",
-  "vehicle_plate": "B 1234 XX",
-  "vehicle_type": "Motor",
-  "user_id": 2
-}
-```
-
----
-
-## Get All Couriers
-
-### Endpoint
-
-```http
-GET /couriers
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-```
-
----
-
-# 💰 Tariff Management
-
-## Create Tariff
-
-Membuat tarif ongkir berdasarkan kota asal, tujuan, dan tipe layanan.
-
-### Endpoint
-
-```http
-POST /tariffs
-```
-
-### Request Body
-
-```json
-{
-  "origin_city": "Jakarta",
-  "destination_city": "Bandung",
-  "service_type": "EXPRESS",
-  "price_per_kg": 20000,
-  "etd": "1-2 Days"
-}
-```
-
----
-
-## Get All Tariffs
-
-### Endpoint
-
-```http
-GET /tariffs
-```
+| Method | Endpoint  | Description          |
+| ------ | --------- | -------------------- |
+| POST   | /couriers | Membuat profil kurir |
+| GET    | /couriers | Melihat daftar kurir |
 
 ---
 
 # 📦 Shipment Management
 
-## Create Shipment (Admin Only)
+| Method | Endpoint                | Description            | Access        |
+| ------ | ----------------------- | ---------------------- | ------------- |
+| POST   | /shipments              | Membuat shipment baru  | Admin         |
+| GET    | /shipments              | List shipment          | Admin / Kurir |
+| POST   | /shipments/:resi/assign | Assign kurir           | Admin         |
+| PATCH  | /shipments/:resi/status | Update status shipment | Kurir         |
+| POST   | /shipments/:resi/pod    | Upload POD             | Kurir         |
+| GET    | /shipments/:resi/pdf    | Download PDF Label     | Admin / Kurir |
+| GET    | /shipments/stats        | Statistik dashboard    | Admin         |
 
-Membuat shipment baru dengan:
-- Auto generate resi
-- Dynamic pricing
-- Multi-item shipment
+---
 
-### Endpoint
-
-```http
-POST /shipments
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-```
-
-### Request Body
+## Example Request - Create Shipment
 
 ```json
 {
   "sender_name": "PT Maju Jaya",
-  "sender_phone": "021111222",
-  "sender_address": "Jl. Industri No.5",
   "sender_city": "Jakarta",
-
-  "receiver_name": "Budi Penerima",
-  "receiver_phone": "0812999888",
-  "receiver_address": "Jl. Dago Atas No.10",
+  "receiver_name": "Budi",
   "receiver_city": "Bandung",
-
   "service_type": "EXPRESS",
-
   "items": [
     {
       "item_name": "Laptop",
       "quantity": 1,
       "weight": 2.5
-    },
-    {
-      "item_name": "Kardus Besar",
-      "quantity": 2,
-      "weight": 5.0
     }
   ]
 }
 ```
 
-### Response
-
-```json
-{
-  "success": true,
-  "code": 201,
-  "message": "Shipment created successfully",
-  "data": {
-    "resi_number": "TRK123456",
-    "total_weight": 7.5,
-    "price": 150000,
-    "service_type": "EXPRESS",
-    "etd": "1-2 Days",
-    "status": "PENDING"
-  }
-}
-```
-
 ---
 
-## Get All Shipments
+# 🛵 Courier App
 
-Mendukung pagination dan search.
-
-### Endpoint
-
-```http
-GET /shipments?page=1&limit=10&search=Budi
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-```
-
----
-
-## Generate PDF Airway Bill
-
-Generate label pengiriman dalam format PDF.
-
-### Endpoint
-
-```http
-GET /shipments/:resi/pdf
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-```
-
-### Response
-
-```http
-Content-Type: application/pdf
-```
-
----
-
-## Assign Courier (Admin Only)
-
-Menugaskan courier ke shipment.
-
-### Endpoint
-
-```http
-POST /shipments/:resi/assign
-```
-
-### Request Body
-
-```json
-{
-  "courier_id": 1
-}
-```
-
----
-
-## Update Shipment Status (Courier)
-
-### Endpoint
-
-```http
-PATCH /shipments/:resi/status
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-```
-
-### Request Body
-
-```json
-{
-  "status": "IN_TRANSIT",
-  "location": "Tol KM 50",
-  "note": "Menuju kota tujuan"
-}
-```
-
----
-
-## Upload POD (Proof of Delivery)
-
-Upload bukti foto penerimaan paket.
-
-### Endpoint
-
-```http
-POST /shipments/:resi/pod
-```
-
-### Header
-
-```http
-Authorization: Bearer <token>
-Content-Type: multipart/form-data
-```
-
-### Form Data
-
-| Key | Type |
-|---|---|
-| pod_image | File |
+| Method | Endpoint  | Description        | Access |
+| ------ | --------- | ------------------ | ------ |
+| GET    | /my-tasks | Daftar tugas kurir | Kurir  |
 
 ---
 
 # 📍 Public Tracking
 
-## Track Shipment by Resi
-
-Endpoint publik untuk tracking shipment tanpa login.
-
-### Endpoint
-
-```http
-GET /track/:resi
-```
-
-### Response
-
-```json
-{
-  "success": true,
-  "code": 200,
-  "message": "Shipment found",
-  "data": {
-    "resi_number": "TRK123456",
-    "status": "DELIVERED",
-
-    "courier": {
-      "name": "Jono Supir",
-      "phone": "08123456789"
-    },
-
-    "items": [
-      {
-        "item_name": "Laptop",
-        "quantity": 1,
-        "weight": 2.5
-      }
-    ],
-
-    "histories": [
-      {
-        "status": "PENDING",
-        "timestamp": "2026-05-21T10:00:00Z",
-        "note": "Shipment created"
-      },
-      {
-        "status": "DELIVERED",
-        "timestamp": "2026-05-21T15:00:00Z",
-        "note": "Package delivered"
-      }
-    ]
-  }
-}
-```
+| Method | Endpoint     | Description               | Access |
+| ------ | ------------ | ------------------------- | ------ |
+| GET    | /track/:resi | Tracking paket & timeline | Public |
 
 ---
 
 # 🗃️ Database Schema
 
-## Tables
-
-1. Users
-2. Couriers
-3. Tariffs
-4. Shipments
-5. ShipmentItems
-6. TrackingHistories
+* **Users** → Data login user.
+* **Couriers** → Profil kerja kurir.
+* **Tariffs** → Tarif pengiriman.
+* **Shipments** → Data utama pengiriman.
+* **ShipmentItems** → Detail item barang.
+* **TrackingHistories** → Histori perjalanan paket.
 
 ---
 
 # 📌 Shipment Status
 
-| Status | Description |
-|---|---|
-| PENDING | Shipment baru dibuat |
-| COURIER_ASSIGNED | Courier sudah ditugaskan |
-| PICKED_UP | Paket diambil courier |
-| IN_TRANSIT | Paket dalam perjalanan |
-| ARRIVED_AT_HUB | Paket tiba di hub |
-| OUT_FOR_DELIVERY | Paket dikirim ke penerima |
-| DELIVERED | Paket diterima |
-| CANCELLED | Shipment dibatalkan |
+| Status           | Description            |
+| ---------------- | ---------------------- |
+| PENDING          | Shipment baru dibuat   |
+| COURIER_ASSIGNED | Kurir telah ditugaskan |
+| IN_TRANSIT       | Paket sedang dikirim   |
+| DELIVERED        | Paket telah diterima   |
 
 ---
 
-# 📌 HTTP Status Code Reference
+# 📌 Courier Status
 
-| Code | Description |
-|---|---|
-| 200 | OK |
-| 201 | Created |
-| 400 | Bad Request |
-| 401 | Unauthorized |
-| 403 | Forbidden |
-| 404 | Not Found |
-| 500 | Internal Server Error |
+| Status  | Description               |
+| ------- | ------------------------- |
+| OFFLINE | Kurir tidak aktif         |
+| ONLINE  | Kurir siap menerima tugas |
 
 ---
 
-# 📄 Standard JSON Response
+# 🚀 Future Improvements
 
-## Success Response
-
-```json
-{
-  "success": true,
-  "code": 200,
-  "message": "Success",
-  "data": {}
-}
-```
-
-## Error Response
-
-```json
-{
-  "success": false,
-  "code": 400,
-  "message": "Validation error",
-  "errors": {
-    "field": [
-      "field is required"
-    ]
-  }
-}
-```
+* Docker & Docker Compose
+* Unit Testing & Integration Testing
+* Redis Caching
+* Rate Limiter
+* Email / SMS Notification
+* Real-time Tracking via WebSocket
 
 ---
-
-# 🧪 API Testing
-
-Disarankan menggunakan:
-
-- Postman
-- Insomnia
-
-## Langkah Testing
-
-1. Login terlebih dahulu
-2. Copy JWT token
-3. Tambahkan token ke header:
-
-```http
-Authorization: Bearer <token>
-```
 
 # A little bit of logic, a little bit of love ❤️
-
-Built using Golang & Fiber.
+A little bit of logic, a little bit of love ❤️

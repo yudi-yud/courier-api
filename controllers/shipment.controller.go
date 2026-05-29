@@ -243,3 +243,25 @@ func (c *ShipmentController) GetStats(ctx *fiber.Ctx) error {
 	}
 	return utils.ResponseJSON(ctx, fiber.StatusOK, "Success", stats)
 }
+
+// GetMyTasks godoc
+// @Summary Get My Assigned Tasks
+// @Description Melihat daftar paket yang ditugaskan kepada kurir yang sedang login.
+// @Tags Courier
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{} "Courier profile not found"
+// @Router /my-tasks [get]
+func (c *ShipmentController) GetMyTasks(ctx *fiber.Ctx) error {
+	// 1. Ambil User ID dari Token JWT
+	userID := ctx.Locals("userID").(uint)
+
+	// 2. Panggil service GetMyTasks (Logic pengecekan kurir ada di dalam service)
+	tasks, err := c.service.GetMyTasks(userID)
+	if err != nil {
+		return utils.ResponseJSON(ctx, fiber.StatusNotFound, err.Error(), nil)
+	}
+
+	return utils.ResponseJSON(ctx, fiber.StatusOK, "Success", tasks)
+}

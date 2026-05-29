@@ -1,0 +1,417 @@
+{
+    "info": {
+        "_postman_id": "f8e9a1b2-c3d4-5e6f-7a8b-9c0d1e2f3a4b",
+        "name": "Courier API - FINAL (Fixed)",
+        "description": "Collection lengkap untuk testing API Kurir. \n\n**Panduan Testing:**\n1. Jalankan 'Login Admin' terlebih dahulu.\n2. Jalankan 'Create Tariff' (wajib sebelum buat shipment).\n3. Jalankan 'Register User (Kurir)' lalu 'Create Courier Profile'.\n4. Buat Shipment.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3000/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "sample_resi",
+            "value": "TRK123456",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "1. Auth & Setup",
+            "item": [
+                {
+                    "name": "Login Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.data && jsonData.data.token) {",
+                                    "    pm.collectionVariables.set(\"token\", jsonData.data.token);",
+                                    "    console.log(\"Token updated: \" + jsonData.data.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Register User (Kurir)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"kurir_jono\",\n  \"password\": \"password123\",\n  \"role\": \"courier\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/register",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "register"
+                            ]
+                        },
+                        "description": "Buat user baru dengan role 'courier'. Catat ID user yang dikembalikan (biasanya 2 atau 3) untuk digunakan di 'Create Courier Profile'."
+                    }
+                },
+                {
+                    "name": "Create Tariff (Wajib)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"origin_city\": \"Jakarta\",\n  \"destination_city\": \"Bandung\",\n  \"service_type\": \"EXPRESS\",\n  \"price_per_kg\": 20000,\n  \"etd\": \"1-2 Days\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/tariffs",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "tariffs"
+                            ]
+                        },
+                        "description": "Wajib dijalankan sebelum Create Shipment agar sistem bisa menghitung harga."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Courier Management",
+            "item": [
+                {
+                    "name": "Create Courier Profile",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Jono Supir\",\n  \"phone\": \"08123456789\",\n  \"vehicle_plate\": \"B 1234 XX\",\n  \"vehicle_type\": \"Motor\",\n  \"user_id\": 2\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/couriers",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "couriers"
+                            ]
+                        },
+                        "description": "Ganti `user_id: 2` dengan ID user yang baru diregister di langkah sebelumnya."
+                    }
+                },
+                {
+                    "name": "Get All Couriers",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/couriers",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "couriers"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Shipment Operations",
+            "item": [
+                {
+                    "name": "Create Shipment (With Items)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.data && jsonData.data.resi_number) {",
+                                    "    pm.collectionVariables.set(\"sample_resi\", jsonData.data.resi_number);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"sender_name\": \"PT Maju Jaya\",\n  \"sender_phone\": \"021111222\",\n  \"sender_address\": \"Jl. Industri No. 5\",\n  \"sender_city\": \"Jakarta\",\n  \"receiver_name\": \"Budi Penerima\",\n  \"receiver_phone\": \"0812999888\",\n  \"receiver_address\": \"Jl. Dago Atas No. 10\",\n  \"receiver_city\": \"Bandung\",\n  \"service_type\": \"EXPRESS\",\n  \"items\": [\n    { \"item_name\": \"Laptop\", \"quantity\": 1, \"weight\": 2.5 },\n    { \"item_name\": \"Kardus\", \"quantity\": 1, \"weight\": 1.0 }\n  ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/shipments",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shipments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Assign Courier",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"courier_id\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/shipments/{{sample_resi}}/assign",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shipments",
+                                "{{sample_resi}}",
+                                "assign"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": \"IN_TRANSIT\",\n  \"location\": \"Tol KM 50\",\n  \"note\": \"Menuju kota tujuan\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/shipments/{{sample_resi}}/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shipments",
+                                "{{sample_resi}}",
+                                "status"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Shipments",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/shipments?page=1&limit=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shipments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Download Airway Bill (PDF)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/shipments/{{sample_resi}}/pdf",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "shipments",
+                                "{{sample_resi}}",
+                                "pdf"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Courier App",
+            "item": [
+                {
+                    "name": "Get My Tasks (Login sebagai Kurir)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/my-tasks",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "my-tasks"
+                            ]
+                        },
+                        "description": "NOTE: Sebelum menjalankan ini, Anda harus Login menggunakan akun 'kurir_jono' (bukan admin) agar mendapatkan token kurir."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. Public Tracking",
+            "item": [
+                {
+                    "name": "Track by Resi",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/track/{{sample_resi}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "track",
+                                "{{sample_resi}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

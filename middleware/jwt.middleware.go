@@ -16,10 +16,19 @@ func JWTProtected() fiber.Handler {
 			return utils.ResponseJSON(c, fiber.StatusUnauthorized, "Missing or malformed JWT", nil)
 		}
 
-		tokenString := strings.Split(authHeader, "Bearer ")[1]
-		if tokenString == "" {
-			return utils.ResponseJSON(c, fiber.StatusUnauthorized, "Missing or malformed JWT", nil)
+		// PERBAIKAN: Validasi format header agar tidak panic
+		if !strings.Contains(authHeader, "Bearer ") {
+			return utils.ResponseJSON(c, fiber.StatusUnauthorized, "Invalid token format", nil)
 		}
+
+		parts := strings.Split(authHeader, "Bearer ")
+
+		// PERBAIKAN: Cek apakah parts[1] ada dan tidak kosong
+		if len(parts) < 2 || parts[1] == "" {
+			return utils.ResponseJSON(c, fiber.StatusUnauthorized, "Invalid or expired JWT", nil)
+		}
+
+		tokenString := parts[1]
 
 		token, err := jwt.ParseWithClaims(tokenString, &utils.JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("JWT_SECRET")), nil
@@ -37,7 +46,7 @@ func JWTProtected() fiber.Handler {
 	}
 }
 
-// Middleware untuk otorisasi role (Admin saja)
+// Authorize untuk cek role (misal Admin Only)
 func Authorize(roles ...string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userRole := c.Locals("role").(string)

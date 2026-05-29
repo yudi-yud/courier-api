@@ -11,6 +11,6 @@ type Courier struct {
 	VehiclePlate string `json:"vehicle_plate"`
 	VehicleType  string `json:"vehicle_type"`
 	Status       string `json:"status" gorm:"default:'OFFLINE'"`
-	UserID       uint   `json:"user_id"`
+	UserID       uint   `json:"user_id" gorm:"unique"`
 	User         User   `json:"user,omitempty"`
 }
