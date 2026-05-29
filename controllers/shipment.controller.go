@@ -254,10 +254,8 @@ func (c *ShipmentController) GetStats(ctx *fiber.Ctx) error {
 // @Failure 404 {object} map[string]interface{} "Courier profile not found"
 // @Router /my-tasks [get]
 func (c *ShipmentController) GetMyTasks(ctx *fiber.Ctx) error {
-	// 1. Ambil User ID dari Token JWT
 	userID := ctx.Locals("userID").(uint)
 
-	// 2. Panggil service GetMyTasks (Logic pengecekan kurir ada di dalam service)
 	tasks, err := c.service.GetMyTasks(userID)
 	if err != nil {
 		return utils.ResponseJSON(ctx, fiber.StatusNotFound, err.Error(), nil)

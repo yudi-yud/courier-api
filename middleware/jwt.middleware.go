@@ -16,14 +16,12 @@ func JWTProtected() fiber.Handler {
 			return utils.ResponseJSON(c, fiber.StatusUnauthorized, "Missing or malformed JWT", nil)
 		}
 
-		// PERBAIKAN: Validasi format header agar tidak panic
 		if !strings.Contains(authHeader, "Bearer ") {
 			return utils.ResponseJSON(c, fiber.StatusUnauthorized, "Invalid token format", nil)
 		}
 
 		parts := strings.Split(authHeader, "Bearer ")
 
-		// PERBAIKAN: Cek apakah parts[1] ada dan tidak kosong
 		if len(parts) < 2 || parts[1] == "" {
 			return utils.ResponseJSON(c, fiber.StatusUnauthorized, "Invalid or expired JWT", nil)
 		}

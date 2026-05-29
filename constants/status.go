@@ -1,4 +1,3 @@
-// Buat file baru: constants/status.go
 package constants
 
 const (

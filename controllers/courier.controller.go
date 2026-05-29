@@ -26,10 +26,8 @@ func (c *CourierController) Create(ctx *fiber.Ctx) error {
 		return utils.ResponseJSON(ctx, 500, err.Error(), nil)
 	}
 
-	// PERBAIKAN: Panggil service untuk ambil data lengkap (termasuk User/Role)
 	createdCourier, err := c.service.GetCourierByID(courier.ID)
 	if err != nil {
-		// Jika gagal fetch data lengkap, kembalikan data dasar saja (jarang terjadi)
 		return utils.ResponseJSON(ctx, 201, "Courier created but failed to fetch details", courier)
 	}
 

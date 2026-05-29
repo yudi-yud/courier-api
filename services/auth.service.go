@@ -51,7 +51,6 @@ func (s *authService) Register(username, password, role string) error {
 	return s.userRepo.Create(user)
 }
 
-// InitAdmin untuk membuat admin default saat startup
 func InitAdmin() {
 	repo := repositories.NewUserRepository()
 	if _, err := repo.FindByUsername("admin"); err != nil {

@@ -57,7 +57,6 @@ func (c *AuthController) Register(ctx *fiber.Ctx) error {
 		return utils.ResponseJSON(ctx, fiber.StatusBadRequest, "Invalid input", nil)
 	}
 
-	// Hanya admin yang bisa register user baru
 	if err := c.service.Register(input.Username, input.Password, input.Role); err != nil {
 		return utils.ResponseJSON(ctx, fiber.StatusInternalServerError, err.Error(), nil)
 	}
